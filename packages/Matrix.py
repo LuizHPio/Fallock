@@ -48,7 +48,7 @@ class Matrix:
 		#loopar pelos blocos no nosso pedaço caindo
 			if block.y == piece.height-1:
 			#checar se o bloco estiver no fundo do pedaço
-				if block.y+1 == self.length:
+				if block.y+1+piece.origin.y == self.length:
 				#checar se colidiu com o solo
 					canFall = False
 					return not canFall
