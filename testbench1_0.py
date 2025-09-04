@@ -14,7 +14,14 @@ def mainThread():
 		os.system("clear")
 		startMatrix.draw()
 		startMatrix.fall()
-		time.sleep(1)
+		if not isPieceFalling(startMatrix):
+			startMatrix.createPiece()
+
+def isPieceFalling(matrix:Matrix) -> bool:
+	for piece in matrix.pieces:
+		if piece.isFalling:
+			return True
+	return False
 
 if __name__ == "__main__":
 	mainThread()

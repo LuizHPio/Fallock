@@ -29,3 +29,6 @@ class Piece:
 			self.blocks.append(block2)
 			self.blocks.append(block3)
 			self.blocks.append(block4)
+
+	def getBlockAbsPos(self, block:Vector2):
+		return block+self.origin

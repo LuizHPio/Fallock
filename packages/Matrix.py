@@ -59,7 +59,10 @@ class Matrix:
   
 					for staticBlock in staticPiece.blocks:
 					#loopar por todos os blocos que estão no chão
-						if (staticBlock.x == block.x) and (staticBlock.y == block.y+1):
+						staticBlockAbsPos = staticPiece.getBlockAbsPos(staticBlock)
+						blockAbsPos = piece.getBlockAbsPos(block)
+
+						if (staticBlockAbsPos.x == blockAbsPos.x) and (staticBlockAbsPos.y == blockAbsPos.y+1):
 						#checar se o bloco no chão está embaixo do bloco
 							canFall = False
 							return not canFall
