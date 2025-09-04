@@ -9,12 +9,11 @@ class Piece:
 	height:int
 	isFalling:bool
  
-	def __init__(self, type, origin):
+	def __init__(self, type:str, origin:Vector2):
 		self.type = type
 		self.origin = origin
 		self.blocks = []
 		self.materializeType(type)
-		self.height = 0
 		self.isFalling = True
 
 	def materializeType(self, type):

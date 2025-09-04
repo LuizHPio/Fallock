@@ -25,10 +25,11 @@ class Matrix:
 					print(" ",end="")
 			#terminar linha
 			print("'")
+   
 	def fall(self):
 		for piece in self.pieces:
 			if piece.isFalling:
-				if self.detectCollision(piece):
+				if self.hasCollided(piece):
 					piece.isFalling = False
 				else:
 					piece.origin.y += 1
@@ -41,7 +42,7 @@ class Matrix:
 		if piece.type == "pyramid":
 			pass
 
-	def detectCollision(self, piece:Piece):
+	def hasCollided(self, piece:Piece):
 		canFall = True
 		for block in piece.blocks:
 		#loopar pelos blocos no nosso pedaço caindo
@@ -50,13 +51,16 @@ class Matrix:
 				if block.y+1 == self.length:
 				#checar se colidiu com o solo
 					canFall = False
-					return canFall
+					return not canFall
 
 				for staticPiece in self.pieces:
+					if staticPiece.isFalling:
+						continue
+  
 					for staticBlock in staticPiece.blocks:
 					#loopar por todos os blocos que estão no chão
 						if (staticBlock.x == block.x) and (staticBlock.y == block.y+1):
 						#checar se o bloco no chão está embaixo do bloco
 							canFall = False
-							return canFall
-		return canFall
+							return not canFall
+		return not canFall
