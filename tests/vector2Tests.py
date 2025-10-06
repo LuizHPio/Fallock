@@ -29,4 +29,4 @@ class Vector2Tester:
 
 if __name__ == "__main__":
     tester = Vector2Tester()
-    print(f'Test 01 status: {tester.test01()}')
+    print(f'Test 01 status: {"Success" if tester.test01() else "Failure"}')
