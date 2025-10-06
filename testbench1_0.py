@@ -1,31 +1,10 @@
-from packages.Matrix import Matrix
-import time
-import os
+from tests.vector2Tests import Vector2Tester
 
 
-def mainThread():
-    startMatrix = Matrix()
-
-    startMatrix.createPiece()
-    os.system("clear")
-    startMatrix.draw()
-    time.sleep(1)
-
-    while True:
-        os.system("clear")
-        startMatrix.draw()
-        startMatrix.fall()
-        if not isPieceFalling(startMatrix):
-            startMatrix.createPiece()
-        time.sleep(1)
-
-
-def isPieceFalling(matrix: Matrix) -> bool:
-    for piece in matrix.pieces:
-        if piece.isFalling:
-            return True
-    return False
+def main_thread():
+    tester = Vector2Tester()
+    print(f'Test 01 status: {tester.test01()}')
 
 
 if __name__ == "__main__":
-    mainThread()
+    main_thread()
