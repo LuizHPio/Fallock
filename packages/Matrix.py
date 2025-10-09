@@ -36,7 +36,7 @@ class Matrix:
                     piece.origin.y += 1
 
     def createPiece(self):
-        newPiece = Piece(type="pyramid", origin=Vector2(2, 0))
+        newPiece = Piece(type="pyramid", origin=Vector2(self.length//2-1, 0))
         self.pieces.append(newPiece)
 
     def rotatePiece(self, piece: Piece):
