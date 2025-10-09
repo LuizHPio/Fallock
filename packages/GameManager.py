@@ -15,12 +15,6 @@ class GameManager():
     def save_score(self):
         pass
 
-    def generate_piece(self):
-        pass
-
-    def petrify_piece(self):
-        pass
-
     def game_loop(self):
         pass
 

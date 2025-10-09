@@ -1,6 +1,6 @@
 class Block:
-    is_empty: bool
     color: list[int]
+    symbol: str
 
-    def __init__(self, is_empty:bool = False):
-        self.is_empty = is_empty
+    def __init__(self, symbol:str = 'X'):
+        self.symbol = symbol

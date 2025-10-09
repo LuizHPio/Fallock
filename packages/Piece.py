@@ -1,5 +1,5 @@
 from packages.Vector2 import Vector2
-
+import random
 from typing import List
 
 
@@ -9,12 +9,15 @@ class Piece:
     blocks: List[Vector2]
     height: int
     isFalling: bool
+    typeList: List[str] = ["pyramid"]
 
-    def __init__(self, type: str, origin: Vector2):
-        self.type = type
+
+    def __init__(self, origin: Vector2, type: str|None = None):
+        
+        self.type = Piece.getRandomType() if type == None else type        
         self.origin = origin
         self.blocks = []
-        self.materializeType(type)
+        self.materializeType(self.type)
         self.isFalling = True
 
     def materializeType(self, type: str):
@@ -33,3 +36,7 @@ class Piece:
 
     def getBlockAbsPos(self, block: Vector2):
         return block+self.origin
+    
+    @staticmethod
+    def getRandomType() -> str:
+        return random.choice(Piece.typeList)

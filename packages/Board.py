@@ -1,8 +1,10 @@
 from packages.Block import Block
 from packages.Piece import Piece
+from packages.Vector2 import Vector2
 
 
 class Board:
+    player_piece: Piece
     grid: list[list[Block|None]]
     height: int
     width: int
@@ -27,6 +29,16 @@ class Board:
                 if not self.grid[piece_block.x][piece_block.y+1] == None:
                     return True
         return False
+
+    def generate_piece(self):
+        self.player_piece = Piece(Vector2(self.width//2,0))
+
+    def petrify_piece(self, piece:Piece):
+        
+        for piece_block in piece.blocks:
+            self.grid[piece_block.x][piece_block.y] = Block()
+
+        self.generate_piece()
 
     def score_line(self):
         pass
