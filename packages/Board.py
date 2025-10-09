@@ -40,5 +40,13 @@ class Board:
 
         self.generate_piece()
 
+    def fall(self):
+        if self.has_collided(self.player_piece):
+            self.petrify_piece(self.player_piece)
+            return
+        
+        self.player_piece.origin.y += 1
+
+
     def score_line(self):
         pass

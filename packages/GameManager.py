@@ -1,13 +1,17 @@
 from packages.Board import Board
+from packages.Renderer import Renderer
+from packages.Vector2 import Vector2
 
 
 class GameManager():
     game_state: str
     level: int
     board: Board
+    renderer: Renderer
 
     def __init__(self):
-        pass
+        board_dimensions = Vector2(10,20)
+        self.renderer = Renderer(board_dimensions)
 
     def process_input(self, user_input: str):
         pass
