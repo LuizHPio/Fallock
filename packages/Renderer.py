@@ -57,7 +57,9 @@ class Renderer:
             time.sleep(3)
 
     @draw_call
-    def draw(self, piece: Piece, board: Board):
+    def draw(self, board: Board):
+
+        piece = board.player_piece
 
         # draw grid borders
 

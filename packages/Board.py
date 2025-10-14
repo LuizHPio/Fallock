@@ -13,6 +13,7 @@ class Board:
         self.height = height
         self.width = width
         self.grid = []
+        self.generate_piece()
 
         for _ in range(self.width):
             self.grid.append([])
