@@ -21,11 +21,8 @@ class InputHandler:
         self.last_keypress = None
         self.listener = Listener(on_release=self.on_release)
         self.listener.start()
+        self.bindings = default_bindings if bindings == None else bindings
 
-        if bindings == None:
-            self.bindings = default_bindings
-
-            
     def get_command(self, peek_key: bool = False) -> Command:
         response = self.get_response()
 
