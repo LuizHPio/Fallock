@@ -6,7 +6,7 @@ from typing import List
 class Piece:
     type: str
     origin: Vector2
-    blocks: List[Vector2]
+    blocks_relative_pos: List[Vector2]
     height: int
     isFalling: bool
     typeList: List[str] = ["pyramid"]
@@ -16,7 +16,7 @@ class Piece:
         
         self.type = Piece.getRandomType() if type == None else type        
         self.origin = origin
-        self.blocks = []
+        self.blocks_relative_pos = []
         self.materializeType(self.type)
         self.isFalling = True
 
@@ -29,10 +29,10 @@ class Piece:
 
             self.height = 2
 
-            self.blocks.append(block1)
-            self.blocks.append(block2)
-            self.blocks.append(block3)
-            self.blocks.append(block4)
+            self.blocks_relative_pos.append(block1)
+            self.blocks_relative_pos.append(block2)
+            self.blocks_relative_pos.append(block3)
+            self.blocks_relative_pos.append(block4)
 
     def getBlockAbsPos(self, block: Vector2):
         return block+self.origin
