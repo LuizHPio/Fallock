@@ -41,7 +41,7 @@ def run_manual_test():
             else:
                 board.generate_piece()
 
-            if count >= 30:
+            if count >= 15:
                 count = 0
                 if hasattr(board, 'fall'):
                     board.fall()
