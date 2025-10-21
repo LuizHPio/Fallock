@@ -1,26 +1,26 @@
 from packages.Vector2 import Vector2
 import random
-from typing import List
+from typing import Literal, TypeAlias, get_args
+
+pieceType: TypeAlias = Literal["pyramid"]
 
 
 class Piece:
-    type: str
+    type: pieceType
     origin: Vector2
-    blocks_relative_pos: List[Vector2]
+    blocks_relative_pos: list[Vector2]
     height: int
     isFalling: bool
-    typeList: List[str] = ["pyramid"]
 
+    def __init__(self, origin: Vector2, type: pieceType | None = None):
 
-    def __init__(self, origin: Vector2, type: str|None = None):
-        
-        self.type = Piece.getRandomType() if type == None else type        
+        self.type = Piece.getRandomType() if type == None else type
         self.origin = origin
         self.blocks_relative_pos = []
         self.materializeType(self.type)
         self.isFalling = True
 
-    def materializeType(self, type: str):
+    def materializeType(self, type: pieceType):
         if type == "pyramid":
             block1 = Vector2(1, 0)
             block2 = Vector2(0, 1)
@@ -36,7 +36,7 @@ class Piece:
 
     def getBlockAbsPos(self, block: Vector2):
         return block+self.origin
-    
+
     @staticmethod
-    def getRandomType() -> str:
-        return random.choice(Piece.typeList)
+    def getRandomType() -> pieceType:
+        return random.choice(list(get_args(pieceType)))

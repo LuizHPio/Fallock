@@ -1,6 +1,7 @@
 from packages.Block import Block
 from packages.Piece import Piece
 from packages.Vector2 import Vector2
+from packages.InputHandler import Command
 
 
 class Board:
@@ -44,6 +45,15 @@ class Board:
             self.grid[block_abs_pos.x][block_abs_pos.y] = Block()
 
         self.generate_piece()
+
+    def movement(self, command: Command):
+        if command == "RIGHT":
+            self.player_piece.origin.x += 1
+            return
+
+        if command == "LEFT":
+            self.player_piece.origin.x -= 1
+            return
 
     def fall(self):
         if self.has_collided(self.player_piece):
