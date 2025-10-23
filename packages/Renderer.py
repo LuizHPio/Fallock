@@ -20,6 +20,12 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
         instance = args[0]
 
         if isinstance(instance, Renderer):
+            # Hack to prevent using the draw functions when debugging
+            if not instance.debug:
+                def void_return(): return None
+                result: T = void_return  # type: ignore
+                return result
+
             instance.stdscr.clear()
             result = func(*args, **kwargs)
             instance.stdscr.refresh()
@@ -34,8 +40,12 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
 class Renderer:
     stdscr: curses.window
     board_dimensions: Vector2
+    debug: bool
 
-    def __init__(self, board_dimensions: Vector2) -> None:
+    def __init__(self, board_dimensions: Vector2, debug: bool = False) -> None:
+
+        if debug:
+            return
 
         self.board_dimensions = board_dimensions
         self.stdscr = curses.initscr()
