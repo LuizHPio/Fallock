@@ -1,13 +1,12 @@
+from pynput.keyboard import Key, KeyCode, Listener
+from unittest.mock import patch
+import unittest
+from packages.InputHandler import InputHandler, Command, KeyPress
 import sys
 import os
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
-
-from packages.InputHandler import InputHandler, Command
-import unittest
-from unittest.mock import patch
-from pynput.keyboard import Key, KeyCode, Listener
 
 
 def run_manual_test():
@@ -19,7 +18,8 @@ def run_manual_test():
         while True:
             command = handler.get_command()
             if command is not None:
-                print(f"Command: {command}, Frames elapsed since last command: {frame_count}")
+                print(
+                    f"Command: {command}, Frames elapsed since last command: {frame_count}")
                 frame_count = 0
             else:
                 frame_count += 1
@@ -28,7 +28,7 @@ def run_manual_test():
 
 
 class TestInputHandler(unittest.TestCase):
-    TEST_BINDINGS: dict[KeyCode, Command] = {
+    TEST_BINDINGS: dict[KeyPress, Command] = {
         KeyCode.from_char("z"): "UP",
         KeyCode.from_char("q"): "LEFT",
     }
@@ -57,8 +57,10 @@ class TestInputHandler(unittest.TestCase):
         key_to_press = KeyCode.from_char("q")
         expected_command = self.TEST_BINDINGS[key_to_press]
         self.handler.on_release(key_to_press)
-        self.assertEqual(self.handler.get_command(peek_key=True), expected_command)
-        self.assertEqual(self.handler.get_command(peek_key=True), expected_command)
+        self.assertEqual(self.handler.get_command(
+            peek_key=True), expected_command)
+        self.assertEqual(self.handler.get_command(
+            peek_key=True), expected_command)
         self.assertEqual(self.handler.get_command(), expected_command)
         self.assertIsNone(self.handler.get_command())
 
@@ -78,4 +80,3 @@ if __name__ == '__main__':
         run_manual_test()
     else:
         unittest.main(argv=['first-arg-is-ignored'], exit=False)
-
