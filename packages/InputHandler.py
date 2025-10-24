@@ -1,7 +1,8 @@
 from pynput.keyboard import Listener, Key, KeyCode
 from typing import Literal, TypeAlias, get_args
 
-Command: TypeAlias = Literal["UP", "DOWN", "LEFT", "RIGHT", "ESCAPE"] | None
+Command: TypeAlias = Literal["UP", "DOWN",
+                             "LEFT", "RIGHT", "ESCAPE", "DUMP"] | None
 KeyPress: TypeAlias = Key | KeyCode | None
 
 
@@ -18,6 +19,7 @@ class InputHandler:
             KeyCode.from_char("d"): "RIGHT",
             KeyCode.from_char("a"): "LEFT",
             KeyCode.from_char("s"): "DOWN",
+            KeyCode.from_char("h"): "DUMP",
             Key.esc: "ESCAPE",
         }
 

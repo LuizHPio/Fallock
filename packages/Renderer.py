@@ -21,7 +21,7 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
 
         if isinstance(instance, Renderer):
             # Hack to prevent using the draw functions when debugging
-            if not instance.debug:
+            if instance.debug:
                 def void_return(): return None
                 result: T = void_return  # type: ignore
                 return result
@@ -43,6 +43,7 @@ class Renderer:
     debug: bool
 
     def __init__(self, board_dimensions: Vector2, debug: bool = False) -> None:
+        self.debug = debug
 
         if debug:
             return
