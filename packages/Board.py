@@ -4,7 +4,7 @@ from packages.Vector2 import Vector2
 from packages.InputHandler import Command
 from packages.Player import Player
 from packages.PowerUp import PowerUp, PowerUpNamesNSpecials
-from typing import Callable, Any
+from typing import Callable, Any, Literal
 
 
 class Board:
@@ -87,17 +87,44 @@ class Board:
             new_rel_abs_pos.append(abs_pos)
 
         for block in new_rel_abs_pos:
+            if block.x > self.width - 1 or block.x < 0:
+                return False
+            if block.y > self.height - 1 or block.y < 0:
+                return False
+
             if isinstance(self.grid[block.x][block.y], Block):
                 return False
 
         return True
 
+    def piece_can_move(self, direction: Literal["LEFT", "RIGHT"]) -> bool:
+        direction_delta = 1 if direction == "RIGHT" else -1
+        piece = self.player_piece
+
+        for relative_block in piece.blocks_relative_pos:
+            abs_pos = piece.getBlockAbsPos(relative_block)
+            new_x = abs_pos.x + direction_delta
+            new_y = abs_pos.y
+
+            if new_x < 0 or new_x >= self.width:
+                return False
+
+            if 0 <= new_y < self.height:
+                if self.grid[new_x][new_y] is not None:
+                    return False
+
+        return True
+
     def movement(self, command: Command):
         if command == "RIGHT":
+            if not self.piece_can_move("RIGHT"):
+                return
             self.player_piece.origin.x += 1
             return
 
         if command == "LEFT":
+            if not self.piece_can_move("LEFT"):
+                return
             self.player_piece.origin.x -= 1
             return
 

@@ -1,17 +1,36 @@
-**_Visualizaçao temporaria do formulario UML_**
+# **Fallock**
 
-|                                            | Elementos Principais                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Nome do caso de uso                        | Partida de Fallocks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Escopo                                     | Global                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Nivel                                      | Utilizaçao do produto                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Ator principal                             | Jogador(Usuário)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Ator coadjuvantes                          | Nenhum(Aplicaçao com alvo para usuario unico)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Interessados                               | Jogador(Usuário)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Pre-condicoes                              | Habituar o jogador aos controles.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Garantia de sucesso                        | Obtencao dos dados da pontuacao serializados                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Cenario de sucesso                         | Ao iniciar o jogo, blocos aleatóriamente escolhidos e coloridos são mostrados no topo da tela e logo em cima começam a cair, o jogador pode mover da esquerda para a direita e rotacionar os blocos em sentido horário e anti-horário. Ao completar uma linha inteira os blocos da linha somem, a pontuação aumenta e o jogador ganha um power up, que pode ser uma bomba, que cai e destrói blocos em volta, um teleportador, que deixa o jogador materializar a peça de baixo para cima, completando espaços no fundo, +(adicionais). |
-| Cenarios alternativos                      | O usuario pode pausar o jogo e resumir ou pausar o jogo e sair                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Requisitos especiais                       | Implementaçao de metodos para o funcionamento do jogo como colisao de blocos e logica de power ups.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Lista de variantes tecnologicas e de dados | Toda interaçao com o usuario sera feita pelo terminal utilizando a biblioteca curses do python para a exibicao e o pynput para a obtencao de entrada assincrona                                                                                                                                                                                                                                                                                                                                                                         |
-| Comentarios diversos                       | ...                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+Um jogo de terminal desenvolvido para a disciplina de Programação Orientada a Objetos (POO).
+
+## **Sobre o Jogo**
+
+Fallock é um jogo de quebra-cabeça de blocos em modo texto, inspirado pelo tetris, mas com as minhas modificações, feitas com o intuito de deixar o jogo mais divertido e desafiador. Além de ser projetado para ser executado diretamente no terminal.  
+Este projeto foi inteiramente desenvolvido em Python, com foco principal na aplicação de conceitos de POO. Uma característica central do desenvolvimento foi a utilização de **strict typing** (tipagem estrita) em todo o código, visando garantir maior robustez, clareza e manutenibilidade.
+
+## **Como Executar**
+
+Siga as instruções abaixo para instalar as dependências e iniciar o jogo.
+
+### **Pré-requisitos**
+
+- Python 3.10 ou superior.
+- Um terminal compatível com a biblioteca curses (padrão na maioria dos sistemas Linux e macOS).
+  - **Usuários de Windows:** É recomendado o uso do [Windows Terminal](https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701) e a instalação do pacote windows-curses (pip install windows-curses).
+
+### **1\. Instalação das Dependências**
+
+Clone ou baixe este repositório. Em seguida, navegue até a pasta principal do projeto e instale as dependências listadas no arquivo requirements.txt:
+
+> \# Navegue até a pasta do projeto  
+> \# ex: cd ~/Documentos/Fallock
+>
+> \# Instale as dependências  
+> pip install \-r requirements.txt
+
+### **2\. Executando o Jogo**
+
+Após a instalação das dependências, você pode iniciar o jogo executando o arquivo game.py na pasta principal:
+
+> python game.py
+
+Divirta-se\!
