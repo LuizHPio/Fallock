@@ -12,6 +12,7 @@ class Player:
     def __init__(self) -> None:
         self.score = 0
         self.power_up = PowerUp(None)
+        self.acummulated_score = 0
 
     def add_score(self, action: ScoreActions):
         if action == "BLOCK_DESTROYED":

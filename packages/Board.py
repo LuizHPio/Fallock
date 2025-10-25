@@ -18,6 +18,7 @@ class Board:
     is_falling_blocks: bool
     is_animating: bool
     blocks_fell_in_scan: bool
+    game_over: bool
 
     def __init__(self, width: int, height: int, player_manager: Player):
         self.player_manager = player_manager
@@ -29,6 +30,7 @@ class Board:
         self.blocks_fell_in_scan = False
         self.collapse_height = -1
         self.scan_height = -1
+        self.game_over = False
         self.generate_piece()
 
         for _ in range(self.width):
@@ -63,6 +65,11 @@ class Board:
 
         for relative_block in piece.blocks_relative_pos:
             block_abs_pos = Piece.getBlockAbsPos(piece, relative_block)
+
+            if block_abs_pos.y < 1:
+                self.game_over = True
+                return
+
             self.grid[block_abs_pos.x][block_abs_pos.y] = Block()
 
         self.generate_piece()
@@ -150,11 +157,15 @@ class Board:
             for y in full_lines:
                 for x in range(self.width):
                     self.grid[x][y] = None
-            self.is_animating = True
-            self.is_falling_blocks = True
-            self.collapse_height = max(full_lines)
-            self.scan_height = max(full_lines) - 1
-            self.blocks_fell_in_scan = False
+
+            self.start_collapse(max(full_lines))
+
+    def start_collapse(self, collapse_height: int):
+        self.is_animating = True
+        self.is_falling_blocks = True
+        self.collapse_height = collapse_height
+        self.scan_height = collapse_height - 1
+        self.blocks_fell_in_scan = False
 
     def apply_block_gravity(self):
         # i will first check from the collapse height and upwards(per line) if there is a block with an empty space below
@@ -250,6 +261,7 @@ class Board:
 
             powerup.name = None
             powerup.is_active = False
+            self.start_collapse(self.player_piece.origin.y)
             self.generate_piece()
 
         powerup_functions: dict[PowerUpNamesNSpecials, Callable[..., Any]] = {

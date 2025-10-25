@@ -47,10 +47,11 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
-MenuScreens: TypeAlias = Literal["START_SCREEN"]
+MenuScreens: TypeAlias = Literal["START_SCREEN",
+                                 "GAME_SCREEN", "END_GAME_SCREEN"]
 
 UI_Elements: TypeAlias = Literal["START_GAME",
-                                 "CHANGE_BINDINGS", "QUIT"] | None
+                                 "CHANGE_BINDINGS", "QUIT", "RETURN_TO_MENU"] | None
 
 
 class Renderer:
@@ -60,7 +61,7 @@ class Renderer:
     selection: UI_Elements
     current_menu: MenuScreens
     elements_per_screen: dict[MenuScreens, list[UI_Elements]] = {
-        "START_SCREEN": ["START_GAME", "CHANGE_BINDINGS", "QUIT"]
+        "START_SCREEN": ["START_GAME", "QUIT"],
     }
 
     def __init__(self, board_dimensions: Vector2, debug: bool = False) -> None:
@@ -176,15 +177,19 @@ class Renderer:
         self.stdscr.addstr(message)
 
     @draw_call
+    def show_bindingscreen(self):
+        pass
+
+    @draw_call
     def show_startscreen(self):
 
         selected_symbol = "+" if self.selection == "START_GAME" else None
         self.draw_square_text(Vector2(2, 2), Vector2(
             22, 8), "Iniciar Jogo", selected_symbol)
 
-        selected_symbol = "+" if self.selection == "CHANGE_BINDINGS" else None
-        self.draw_square_text(
-            Vector2(2, 10), Vector2(22, 16), "Mudar controles", selected_symbol)
+        # selected_symbol = "+" if self.selection == "CHANGE_BINDINGS" else None
+        # self.draw_square_text(
+        #    Vector2(2, 10), Vector2(22, 16), "Mudar controles", selected_symbol)
 
         selected_symbol = "+" if self.selection == "QUIT" else None
         self.draw_square_text(Vector2(2, 18), Vector2(
@@ -223,6 +228,41 @@ class Renderer:
         for y in range(left_top_corner.y+1, right_bottom_corner.y):
             self.stdscr.addstr(y, left_top_corner.x, "|")
             self.stdscr.addstr(y, right_bottom_corner.x, "|")
+
+    @draw_call
+    def show_endscreen(self, match_score: int, accumulated_score: int):
+        self.selection = "RETURN_TO_MENU"
+        screen_height = curses.LINES
+        screen_width = curses.COLS
+
+        center_x = screen_width // 2
+        top_y = screen_height // 4
+        self.draw_centered_text(Vector2(center_x, top_y), "Game Over")
+
+        score_y = top_y + 3
+        self.draw_centered_text(Vector2(center_x, score_y),
+                                f"Pontuação da Partida: {match_score}")
+
+        accumulated_score_y = top_y + 5
+        self.draw_centered_text(Vector2(center_x, accumulated_score_y),
+                                f"Pontuação Acumulada: {accumulated_score}")
+
+        button_width = 22
+        button_height = 6
+
+        button_bottom_y = screen_height - 3
+        button_top_y = button_bottom_y - button_height
+
+        button_left_x = center_x - (button_width // 2)
+        button_right_x = center_x + (button_width // 2)
+
+        top_left = Vector2(button_left_x, button_top_y)
+        bottom_right = Vector2(button_right_x, button_bottom_y)
+        text = "Voltar ao Menu"
+
+        selected_symbol = "+" if self.selection == "RETURN_TO_MENU" else None
+
+        self.draw_square_text(top_left, bottom_right, text, selected_symbol)
 
     def draw_centered_text(self, text_center: Vector2, text: str):
         text_length = len(text)

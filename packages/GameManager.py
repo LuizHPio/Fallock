@@ -30,11 +30,13 @@ class GameManager():
         self.level = 1
         self.game_running = False
 
-    def main(self):
-        self.renderer.show_startscreen()
+    def menu(self, first_start: bool = False):
+        if first_start:
+            self.renderer.show_startscreen()
+
         while True:
             self.process_input(self.input_handler.get_command())
-            time.sleep(0.1)
+            time.sleep(0.05)
 
     def process_input(self, user_input: Command):
         if self.game_running:
@@ -45,15 +47,27 @@ class GameManager():
 
     def menu_inputs(self, user_input: Command):
         if user_input == "RETURN":
-            if self.renderer.selection == "START_GAME":
-                self.game_loop()
+            if self.renderer.current_menu == "START_SCREEN":
+                if self.renderer.selection == "START_GAME":
+                    self.board = Board(
+                        self.board.width, self.board.height, self.player_manager)
+                    self.renderer.current_menu = "GAME_SCREEN"
+                    self.renderer.selection = None
+                    self.game_loop()
+                    return
+
+                if self.renderer.selection == "CHANGE_BINDINGS":
+                    return
+
+                if self.renderer.selection == "QUIT":
+                    exit()
                 return
 
-            if self.renderer.selection == "CHANGE_BINDINGS":
-                return
-
-            if self.renderer.selection == "QUIT":
-                exit()
+            if self.renderer.current_menu == "END_GAME_SCREEN":
+                if user_input == "RETURN":
+                    self.renderer.current_menu = "START_SCREEN"
+                    self.renderer.selection = None
+                    self.menu(True)
 
         if user_input == "DOWN":
             self.renderer.next_selection()
@@ -92,6 +106,9 @@ class GameManager():
                 time.sleep(0.016)
             else:
                 if self.elapsed_time(logic_timer) > 1/self.target_tickrate:
+                    if self.board.game_over:
+                        self.game_running = False
+                        break
                     if tickrate_counter == self.difficulty(self.level):
                         self.board.physics_logic()
                         tickrate_counter = 0
@@ -103,6 +120,12 @@ class GameManager():
 
             self.wait_framerate(render_timer)
             render_timer = time.time_ns()
+
+        self.renderer.current_menu = "END_GAME_SCREEN"
+        self.renderer.selection = None
+        self.renderer.show_endscreen(
+            self.player_manager.score, self.player_manager.acummulated_score)
+        self.menu()
 
     def wait_framerate(self, timer: int):
         diff = 1/self.target_framerate - self.elapsed_time(timer)
