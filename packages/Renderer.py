@@ -83,14 +83,14 @@ class Renderer:
         self.selection = None
 
     def require_window_resize(self):
-        while (curses.LINES + 1) < self.board_dimensions.x:
+        while (curses.LINES + 1) < self.board_dimensions.x + 20:
             self.show_alert(
-                "Aumente o tamanho do terminal horizontalmente e espere 3 segundos...")
+                "Aumente o tamanho do terminal e reinicie o jogo")
             time.sleep(0.1)
 
-        while (curses.COLS + 1) < self.board_dimensions.y:
+        while (curses.COLS + 1) < self.board_dimensions.y + 20:
             self.show_alert(
-                "Aumente o tamanho do terminal horizontalmente e espere 3 segundos...")
+                "Aumente o tamanho do terminal e reinicie o jogo")
             time.sleep(0.1)
 
     def next_selection(self):

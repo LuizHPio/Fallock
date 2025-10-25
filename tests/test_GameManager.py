@@ -9,7 +9,7 @@ from packages.GameManager import GameManager  # nopep8
 
 
 def run_manual_test():
-    being_debugged = 'TERM_PROGRAM' in os.environ.keys()
+    # being_debugged = 'TERM_PROGRAM' in os.environ.keys()
 
     mgr = GameManager()
     mgr.menu(True)
