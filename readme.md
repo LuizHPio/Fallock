@@ -11,6 +11,10 @@ Este projeto foi inteiramente desenvolvido em Python, com foco principal na apli
 
 Siga as instruções abaixo para instalar as dependências e iniciar o jogo.
 
+### AVISO:
+
+Esse jogo foi desenvolvido inteiramente no Linux Ubuntu 24 Wayland e até o momento não foi testado em nenhuma outra plataforma, prossiga com isso em mente.
+
 ### **Pré-requisitos**
 
 - Python 3.10 ou superior.
