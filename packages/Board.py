@@ -3,7 +3,7 @@ from packages.Piece import Piece, generatableTypes
 from packages.Vector2 import Vector2
 from packages.InputHandler import Command
 from packages.Player import Player
-from packages.PowerUp import PowerUp, PowerUpNamesNNone
+from packages.PowerUp import PowerUp, PowerUpNamesNSpecials
 from typing import Callable, Any
 
 
@@ -252,7 +252,7 @@ class Board:
             powerup.is_active = False
             self.generate_piece()
 
-        powerup_functions: dict[PowerUpNamesNNone, Callable[..., Any]] = {
+        powerup_functions: dict[PowerUpNamesNSpecials, Callable[..., Any]] = {
             "TELEPORTER": teleport_piece,
             "BOMB": explode_bomb}
 
