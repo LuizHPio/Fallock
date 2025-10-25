@@ -55,7 +55,7 @@ class Board:
 
     def petrify_piece(self, piece: Piece):
         if piece.type == "BOMB":
-            if self.player_manager.power_up == None:
+            if self.player_manager.power_up.name == None:
                 return
             self.run_powerup(self.player_manager.power_up)
             self.generate_piece()
@@ -67,6 +67,24 @@ class Board:
 
         self.generate_piece()
 
+    def piece_can_rotate(self, piece: Piece, is_clock_wise: bool) -> bool:
+        new_rel_pos: list[Vector2] = []
+
+        for block in piece.blocks_relative_pos:
+            block = piece.vectorRightRotation(block, is_clock_wise)
+            new_rel_pos.append(block)
+
+        new_rel_abs_pos: list[Vector2] = []
+        for block in new_rel_pos:
+            abs_pos = piece.getBlockAbsPos(block)
+            new_rel_abs_pos.append(abs_pos)
+
+        for block in new_rel_abs_pos:
+            if isinstance(self.grid[block.x][block.y], Block):
+                return False
+
+        return True
+
     def movement(self, command: Command):
         if command == "RIGHT":
             self.player_piece.origin.x += 1
@@ -76,8 +94,24 @@ class Board:
             self.player_piece.origin.x -= 1
             return
 
+        if command == "CLOCKWISE_ROTATION":
+            is_clockwise = True
+            if not self.piece_can_rotate(self.player_piece, is_clockwise):
+                return
+
+            self.player_piece.rotateBlocks(is_clockwise)
+            return
+
+        if command == "COUNTERWISE_ROTATION":
+            is_clockwise = False
+            if not self.piece_can_rotate(self.player_piece, is_clockwise):
+                return
+
+            self.player_piece.rotateBlocks(is_clockwise)
+            return
+
         if command == "TRIGGER_POWERUP":
-            if self.player_manager.power_up != None:
+            if self.player_manager.power_up.name != None:
                 self.run_powerup(self.player_manager.power_up)
 
         # implement function to prevent piece from moving outside of the board
@@ -212,6 +246,7 @@ class Board:
                     continue
 
                 self.grid[abs_delete_pos.x][abs_delete_pos.y] = None
+                self.player_manager.add_score("BLOCK_DESTROYED")
 
             powerup.name = None
             powerup.is_active = False

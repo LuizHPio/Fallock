@@ -2,7 +2,7 @@ from pynput.keyboard import Listener, Key, KeyCode
 from typing import Literal, TypeAlias, get_args
 
 Command: TypeAlias = Literal["UP", "DOWN",
-                             "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP"] | None
+                             "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION"] | None
 KeyPress: TypeAlias = Key | KeyCode | None
 
 
@@ -21,6 +21,8 @@ class InputHandler:
             KeyCode.from_char("s"): "DOWN",
             KeyCode.from_char("h"): "DUMP",
             KeyCode.from_char("p"): "TRIGGER_POWERUP",
+            KeyCode.from_char("e"): "CLOCKWISE_ROTATION",
+            KeyCode.from_char("q"): "COUNTERWISE_ROTATION",
             Key.esc: "ESCAPE",
         }
 

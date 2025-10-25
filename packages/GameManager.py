@@ -29,7 +29,8 @@ class GameManager():
         self.level = 1
 
     def process_input(self, user_input: Command):
-        movement_commands: list[Command] = ["LEFT", "RIGHT", "TRIGGER_POWERUP"]
+        movement_commands: list[Command] = [
+            "LEFT", "RIGHT", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION"]
 
         if user_input in movement_commands:
             self.board.movement(user_input)
