@@ -3,7 +3,6 @@ from packages.Renderer import Renderer
 from packages.Vector2 import Vector2
 from packages.InputHandler import InputHandler, Command
 from packages.Player import Player
-import os
 import time
 import math
 
@@ -30,34 +29,18 @@ class GameManager():
         self.level = 1
 
     def process_input(self, user_input: Command):
-        movement_commands = ["LEFT", "RIGHT"]
+        movement_commands: list[Command] = ["LEFT", "RIGHT", "TRIGGER_POWERUP"]
 
         if user_input in movement_commands:
             self.board.movement(user_input)
 
         if user_input == "DUMP":
             del self.renderer
-            self.debug_print(self.board)
+            self.renderer.debug_print(self.board)
             exit()
 
         if user_input == "ESCAPE":
             self.pause_game()
-
-    def debug_print(self, board: Board):
-        os.system("clear")
-        for y in range(board.height):
-            for x in range(board.width):
-                for block in self.board.player_piece.blocks_relative_pos:
-                    abs_block = self.board.player_piece.getBlockAbsPos(block)
-                    if abs_block.x == x and abs_block.y == y:
-                        print("X", end="")
-                        break
-                else:
-                    if board.grid[x][y] == None:
-                        print(" ", end="")
-                    else:
-                        print("X", end="")
-            print("|")
 
     def save_score(self):
         pass
@@ -69,8 +52,9 @@ class GameManager():
         tickrate_counter = 0
         while True:
             if self.board.is_animating:
-                self.renderer.draw(self.board)
                 self.board.physics_logic()
+                self.renderer.draw(self.board)
+                time.sleep(0.016)
             else:
                 if self.elapsed_time(logic_timer) > 1/self.target_tickrate:
                     if tickrate_counter == self.difficulty(self.level):

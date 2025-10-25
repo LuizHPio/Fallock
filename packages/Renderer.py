@@ -5,6 +5,7 @@ import curses
 import time
 import functools
 from packages.Piece import Piece
+import os
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -18,13 +19,17 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         instance = args[0]
+        board = args[1]
 
         if isinstance(instance, Renderer):
             # Hack to prevent using the draw functions when debugging
             if instance.debug:
+                if isinstance(board, Board):
+                    # type: ignore
+                    return instance.debug_print(board)  # type: ignore
+
                 def void_return(): return None
-                result: T = void_return  # type: ignore
-                return result
+                return void_return  # type: ignore
 
             instance.stdscr.clear()
             result = func(*args, **kwargs)
@@ -114,3 +119,19 @@ class Renderer:
         curses.echo()
 
         curses.endwin()
+
+    def debug_print(self, board: Board):
+        os.system("clear")
+        for y in range(board.height):
+            for x in range(board.width):
+                for block in board.player_piece.blocks_relative_pos:
+                    abs_block = board.player_piece.getBlockAbsPos(block)
+                    if abs_block.x == x and abs_block.y == y:
+                        print("X", end="")
+                        break
+                else:
+                    if board.grid[x][y] == None:
+                        print(" ", end="")
+                    else:
+                        print("X", end="")
+            print("|")
