@@ -16,6 +16,7 @@ class GameManager():
     target_framerate: int
     input_handler: InputHandler
     player_manager: Player
+    game_running: bool
 
     def __init__(self, debug: bool = False):
         board_dimensions = Vector2(12, 20)
@@ -27,8 +28,42 @@ class GameManager():
         self.target_tickrate = 128
         self.target_framerate = 256
         self.level = 1
+        self.game_running = False
+
+    def main(self):
+        self.renderer.show_startscreen()
+        while True:
+            self.process_input(self.input_handler.get_command())
+            time.sleep(0.1)
 
     def process_input(self, user_input: Command):
+        if self.game_running:
+            self.game_inputs(user_input)
+            return
+
+        self.menu_inputs(user_input)
+
+    def menu_inputs(self, user_input: Command):
+        if user_input == "RETURN":
+            if self.renderer.selection == "START_GAME":
+                self.game_loop()
+                return
+
+            if self.renderer.selection == "CHANGE_BINDINGS":
+                return
+
+            if self.renderer.selection == "QUIT":
+                exit()
+
+        if user_input == "DOWN":
+            self.renderer.next_selection()
+            return
+
+        if user_input == "UP":
+            self.renderer.previous_selection()
+            return
+
+    def game_inputs(self, user_input: Command):
         movement_commands: list[Command] = [
             "LEFT", "RIGHT", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION"]
 
@@ -43,15 +78,14 @@ class GameManager():
         if user_input == "ESCAPE":
             self.pause_game()
 
-    def save_score(self):
-        pass
-
     def game_loop(self):
+        self.game_running = True
+
         logic_timer = time.time_ns()
         render_timer = time.time_ns()
 
         tickrate_counter = 0
-        while True:
+        while self.game_running:
             if self.board.is_animating:
                 self.board.physics_logic()
                 self.renderer.draw(self.board)

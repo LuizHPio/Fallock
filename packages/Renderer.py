@@ -1,6 +1,6 @@
 from packages.Board import Board
 from packages.Vector2 import Vector2
-from typing import Callable, TypeVar, ParamSpec
+from typing import Callable, TypeVar, ParamSpec, Literal, TypeAlias
 import curses
 import time
 import functools
@@ -18,8 +18,13 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
     """
     @functools.wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
-        instance = args[0]
-        board = args[1]
+        board = None
+
+        if len(args) < 2:
+            instance = args[0]
+        else:
+            instance = args[0]
+            board = args[1]
 
         if isinstance(instance, Renderer):
             # Hack to prevent using the draw functions when debugging
@@ -42,12 +47,24 @@ def draw_call(func: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
+MenuScreens: TypeAlias = Literal["START_SCREEN"]
+
+UI_Elements: TypeAlias = Literal["START_GAME",
+                                 "CHANGE_BINDINGS", "QUIT"] | None
+
+
 class Renderer:
     stdscr: curses.window
     board_dimensions: Vector2
     debug: bool
+    selection: UI_Elements
+    current_menu: MenuScreens
+    elements_per_screen: dict[MenuScreens, list[UI_Elements]] = {
+        "START_SCREEN": ["START_GAME", "CHANGE_BINDINGS", "QUIT"]
+    }
 
     def __init__(self, board_dimensions: Vector2, debug: bool = False) -> None:
+        self.selection = None
         self.debug = debug
 
         if debug:
@@ -61,16 +78,52 @@ class Renderer:
         self.stdscr.keypad(True)
         self.require_window_resize()
 
+        self.current_menu = "START_SCREEN"
+        self.selection = None
+
     def require_window_resize(self):
         while (curses.LINES + 1) < self.board_dimensions.x:
             self.show_alert(
                 "Aumente o tamanho do terminal horizontalmente e espere 3 segundos...")
-            time.sleep(3)
+            time.sleep(0.1)
 
         while (curses.COLS + 1) < self.board_dimensions.y:
             self.show_alert(
                 "Aumente o tamanho do terminal horizontalmente e espere 3 segundos...")
-            time.sleep(3)
+            time.sleep(0.1)
+
+    def next_selection(self):
+        possible_selections = self.elements_per_screen[self.current_menu]
+
+        if self.selection == None:
+            self.selection = possible_selections[0]
+            self.show_startscreen()
+            return
+
+        current_selection_index = possible_selections.index(self.selection)
+
+        if current_selection_index+2 > len(possible_selections):
+            current_selection_index = -1
+
+        self.selection = possible_selections[current_selection_index+1]
+        self.show_startscreen()
+
+    def previous_selection(self):
+
+        possible_selections = self.elements_per_screen[self.current_menu]
+
+        if self.selection == None:
+            self.selection = possible_selections[0]
+            self.show_startscreen()
+            return
+
+        current_selection_index = possible_selections.index(self.selection)
+
+        if current_selection_index-1 < 0:
+            current_selection_index = len(possible_selections)
+
+        self.selection = possible_selections[current_selection_index-1]
+        self.show_startscreen()
 
     @draw_call
     def draw(self, board: Board):
@@ -121,6 +174,66 @@ class Renderer:
     @draw_call
     def show_alert(self, message: str):
         self.stdscr.addstr(message)
+
+    @draw_call
+    def show_startscreen(self):
+
+        selected_symbol = "+" if self.selection == "START_GAME" else None
+        self.draw_square_text(Vector2(2, 2), Vector2(
+            22, 8), "Iniciar Jogo", selected_symbol)
+
+        selected_symbol = "+" if self.selection == "CHANGE_BINDINGS" else None
+        self.draw_square_text(
+            Vector2(2, 10), Vector2(22, 16), "Mudar controles", selected_symbol)
+
+        selected_symbol = "+" if self.selection == "QUIT" else None
+        self.draw_square_text(Vector2(2, 18), Vector2(
+            22, 24), "Sair", selected_symbol)
+
+    def draw_square_text(self, left_top_corner: Vector2, right_bottom_corner: Vector2, text: str, symbol: str | None = None):
+        self.draw_square(left_top_corner, right_bottom_corner, symbol)
+        self.draw_centered_text(self.get_square_middle(
+            left_top_corner, right_bottom_corner), text)
+
+    def draw_square(self, left_top_corner: Vector2, right_bottom_corner: Vector2, symbol: str | None = None):
+        if left_top_corner.x > right_bottom_corner.x:
+            return
+        if left_top_corner.y > right_bottom_corner.y:
+            return
+
+        self.stdscr.addstr(left_top_corner.y, left_top_corner.x, "+")
+        self.stdscr.addstr(left_top_corner.y, right_bottom_corner.x, "+")
+        self.stdscr.addstr(right_bottom_corner.y, left_top_corner.x, "+")
+        self.stdscr.addstr(right_bottom_corner.y, right_bottom_corner.x, "+")
+
+        if symbol == None:
+            draw_with = "-"
+        else:
+            draw_with = symbol
+
+        for x in range(left_top_corner.x+1, right_bottom_corner.x):
+            self.stdscr.addstr(left_top_corner.y, x, draw_with)
+            self.stdscr.addstr(right_bottom_corner.y, x, draw_with)
+
+        if symbol == None:
+            draw_with = "|"
+        else:
+            draw_with = symbol
+
+        for y in range(left_top_corner.y+1, right_bottom_corner.y):
+            self.stdscr.addstr(y, left_top_corner.x, "|")
+            self.stdscr.addstr(y, right_bottom_corner.x, "|")
+
+    def draw_centered_text(self, text_center: Vector2, text: str):
+        text_length = len(text)
+        start_vector = Vector2(text_center.y, text_center.x-(text_length//2))
+
+        self.stdscr.addstr(start_vector.x, start_vector.y, text)
+
+    def get_square_middle(self, top_left_corner: Vector2, bottom_right_corner: Vector2):
+        middle = Vector2((top_left_corner.x+bottom_right_corner.x) //
+                         2, (top_left_corner.y+bottom_right_corner.y)//2)
+        return middle
 
     def __del__(self):
         curses.nocbreak()
