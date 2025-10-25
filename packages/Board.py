@@ -1,8 +1,10 @@
 from packages.Block import Block
-from packages.Piece import Piece
+from packages.Piece import Piece, generatableTypes
 from packages.Vector2 import Vector2
 from packages.InputHandler import Command
 from packages.Player import Player
+from packages.PowerUp import PowerUp, PowerUpNames
+from typing import Callable, Any
 
 
 class Board:
@@ -48,10 +50,16 @@ class Board:
                     return True
         return False
 
-    def generate_piece(self):
-        self.player_piece = Piece(Vector2(self.width//2, 0))
+    def generate_piece(self, type: generatableTypes = None):
+        self.player_piece = Piece(Vector2(self.width//2, 0), type)
 
     def petrify_piece(self, piece: Piece):
+        if piece.type == "BOMB":
+            if self.player_manager.power_up == None:
+                return
+            self.run_powerup(self.player_manager.power_up)
+            self.generate_piece()
+            return
 
         for relative_block in piece.blocks_relative_pos:
             block_abs_pos = Piece.getBlockAbsPos(piece, relative_block)
@@ -67,6 +75,10 @@ class Board:
         if command == "LEFT":
             self.player_piece.origin.x -= 1
             return
+
+        if command == "TRIGGER_POWERUP":
+            if self.player_manager.power_up != None:
+                self.run_powerup(self.player_manager.power_up)
 
         # implement function to prevent piece from moving outside of the board
 
@@ -147,3 +159,67 @@ class Board:
                     self.blocks_fell_in_scan = True
 
         self.scan_height -= 1
+
+    def is_outside_grid(self, vector: Vector2):
+        if vector.y > self.height-1 or vector.y < 0:
+            return True
+
+        if vector.x > self.width-1 or vector.x < 0:
+            return True
+
+        return False
+
+    def run_powerup(self, powerup: PowerUp):
+
+        def teleport_piece():
+            for block in self.player_piece.blocks_relative_pos:
+                abs_block = self.player_piece.getBlockAbsPos(block)
+
+                for scanning_height in range(self.height-1, -1, -1):
+                    current_place = self.grid[abs_block.x][scanning_height]
+                    if current_place == None:
+                        self.grid[abs_block.x][scanning_height] = Block()
+                        break
+            self.score_line()
+
+            self.generate_piece()
+            powerup.name = None
+
+        def explode_bomb():
+
+            if not powerup.is_active:
+                powerup.is_active = True
+                self.generate_piece("BOMB")
+                return
+
+            # vectors corresponding to the deleted blocks around the bomb, radius = 2
+
+            delete_vectors = [
+                Vector2(0, 2),
+                Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
+                Vector2(-2, 0), Vector2(-1, 0), Vector2(1, 0), Vector2(2, 0),
+                Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1),
+                Vector2(0, -2)]
+
+            bomb_pos = self.player_piece.getBlockAbsPos(
+                self.player_piece.blocks_relative_pos[0])
+
+            for delete_vector in delete_vectors:
+                abs_delete_pos = bomb_pos + delete_vector
+                if self.is_outside_grid(abs_delete_pos):
+                    continue
+
+                self.grid[abs_delete_pos.x][abs_delete_pos.y] = None
+
+            powerup.name = None
+            powerup.is_active = False
+            self.generate_piece()
+
+        powerup_functions: dict[PowerUpNames, Callable[..., Any]] = {
+            "TELEPORTER": teleport_piece,
+            "BOMB": explode_bomb}
+
+        if powerup.name == None:
+            return
+
+        powerup_functions[powerup.name]()

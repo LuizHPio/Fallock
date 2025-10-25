@@ -1,13 +1,17 @@
-from abc import abstractmethod, ABC
+from typing import Literal
+
+PowerUpNames = Literal["TELEPORTER", "BOMB"] | None
 
 
-class PowerUp(ABC):
-    id: int
-    name: str
+class PowerUp():
+    name: PowerUpNames
+    is_active: bool
 
     def __init__(self) -> None:
+        self.is_active = False
+
+    def activate(self):
         pass
 
-    @abstractmethod
-    def activate(self):
+    def deactivate(self):
         pass

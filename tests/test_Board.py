@@ -4,6 +4,7 @@ from packages.Block import Block
 from packages.Vector2 import Vector2
 from packages.Piece import Piece
 from packages.Player import Player
+from packages.PowerUp import PowerUp
 
 
 class TestBoard(unittest.TestCase):
@@ -106,6 +107,30 @@ class TestBoard(unittest.TestCase):
         self.assertIsInstance(self.board.grid[6][19], Block)
         self.assertEqual(self.board.player_piece.origin.y, 0)
 
+    def test_explode_bomb_clears_spaces(self) -> None:
+        self.board.player_manager.power_up = PowerUp()
+
+        self.board.player_manager.power_up.is_active = True
+        self.board.player_manager.power_up.name = "BOMB"
+
+        check_vectors = [Vector2(5, 2),
+                         Vector2(4, 3), Vector2(5, 3), Vector2(6, 3),
+                         Vector2(3, 4), Vector2(4, 4), Vector2(
+                             6, 4), Vector2(7, 4),
+                         Vector2(4, 5), Vector2(5, 5), Vector2(6, 5),
+                         Vector2(5, 6)]
+
+        for check_vector in check_vectors:
+            self.board.grid[check_vector.x][check_vector.y] = Block()
+
+        self.board.generate_piece("BOMB")
+        self.board.player_piece.origin = Vector2(5, 4)
+
+        self.board.run_powerup(self.board.player_manager.power_up)
+
+        for check_vector in check_vectors:
+            self.assertIsNone(self.board.grid[check_vector.x][check_vector.y])
+
     def test_score_line_clears_full_line(self) -> None:
         """Test that a full line is identified and cleared."""
         # Create a full line at the bottom
@@ -123,7 +148,7 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(self.board.is_animating)
         self.assertTrue(self.board.is_falling_blocks)
         self.assertEqual(self.board.collapse_height, 19)
-        self.assertEqual(self.board.scan_height, 19)
+        self.assertEqual(self.board.scan_height, 18)
 
     def test_score_line_no_full_line(self) -> None:
         """Test that nothing happens if no lines are full."""

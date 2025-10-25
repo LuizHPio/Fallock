@@ -1,4 +1,8 @@
+from packages.PowerUp import PowerUp
+
+
 class Player:
+    power_up: PowerUp | None
     score: int
 
     def __init__(self) -> None:
@@ -8,7 +12,4 @@ class Player:
         pass
 
     def add_powerup(self):
-        pass
-
-    def use_powerup(self, id: int):
         pass
