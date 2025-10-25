@@ -3,7 +3,7 @@ from packages.Piece import Piece, generatableTypes
 from packages.Vector2 import Vector2
 from packages.InputHandler import Command
 from packages.Player import Player
-from packages.PowerUp import PowerUp, PowerUpNames
+from packages.PowerUp import PowerUp, PowerUpNamesNNone
 from typing import Callable, Any
 
 
@@ -111,6 +111,8 @@ class Board:
             full_lines.append(y)
 
         if full_lines:
+            self.player_manager.add_score("LINE_CLEAR")
+
             for y in full_lines:
                 for x in range(self.width):
                     self.grid[x][y] = None
@@ -215,7 +217,7 @@ class Board:
             powerup.is_active = False
             self.generate_piece()
 
-        powerup_functions: dict[PowerUpNames, Callable[..., Any]] = {
+        powerup_functions: dict[PowerUpNamesNNone, Callable[..., Any]] = {
             "TELEPORTER": teleport_piece,
             "BOMB": explode_bomb}
 
