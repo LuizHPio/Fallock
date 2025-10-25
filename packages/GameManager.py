@@ -70,8 +70,9 @@ class GameManager():
             render_timer = time.time_ns()
 
     def wait_framerate(self, timer: int):
-        if 1/self.target_framerate > self.elapsed_time(timer):
-            time.sleep(1/self.target_framerate - self.elapsed_time(timer))
+        diff = 1/self.target_framerate - self.elapsed_time(timer)
+        if diff > 0:
+            time.sleep(diff)
 
     def pause_game(self):
         pass

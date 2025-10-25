@@ -9,9 +9,6 @@ from packages.GameManager import GameManager  # nopep8
 
 
 def run_manual_test():
-    """
-    Runs an interactive, manual test for the Game Manager class.
-    """
     being_debugged = 'TERM_PROGRAM' in os.environ.keys()
 
     mgr = GameManager(being_debugged)
