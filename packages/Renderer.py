@@ -109,6 +109,15 @@ class Renderer:
             abs_pos = Piece.getBlockAbsPos(piece, piece_block)
             self.stdscr.addstr(abs_pos.y+y_offset, abs_pos.x+x_offset, "X")
 
+        # draw current power up
+        safezone = board.width+2
+        self.stdscr.addstr(
+            2, safezone+3, f"Power up atual: {"Nenhum" if board.player_manager.power_up.name == None else board.player_manager.power_up.name}")
+
+        self.stdscr.addstr((board.height+2)+2, 2,
+                           f"Pontuação: {board.player_manager.score}")
+        self.stdscr.addstr((board.height+2)+3, 2, "Pontuação acumulada: ")
+
     @draw_call
     def show_alert(self, message: str):
         self.stdscr.addstr(message)
