@@ -1,35 +1,33 @@
-from pynput.keyboard import Listener, Key, KeyCode
+import keyboard
 from typing import Literal, TypeAlias, get_args
 
 Command: TypeAlias = Literal["UP", "DOWN",
                              "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION", "RETURN"] | None
-KeyPress: TypeAlias = Key | KeyCode | None
+KeyPress: TypeAlias = str | None
 
 
 class InputHandler:
     responses: list[Command] = list(get_args(Command))
 
-    listener: Listener
     last_keypress: KeyPress
     bindings: dict[KeyPress, Command]
 
     def __init__(self, bindings: dict[KeyPress, Command] | None = None) -> None:
         default_bindings: dict[KeyPress, Command] = {
-            KeyCode.from_char("w"): "UP",
-            KeyCode.from_char("d"): "RIGHT",
-            KeyCode.from_char("a"): "LEFT",
-            KeyCode.from_char("s"): "DOWN",
-            KeyCode.from_char("h"): "DUMP",
-            KeyCode.from_char("p"): "TRIGGER_POWERUP",
-            KeyCode.from_char("e"): "CLOCKWISE_ROTATION",
-            KeyCode.from_char("q"): "COUNTERWISE_ROTATION",
-            Key.enter: "RETURN",
-            Key.esc: "ESCAPE",
+            "w": "UP",
+            "d": "RIGHT",
+            "a": "LEFT",
+            "s": "DOWN",
+            "h": "DUMP",
+            "p": "TRIGGER_POWERUP",
+            "e": "CLOCKWISE_ROTATION",
+            "q": "COUNTERWISE_ROTATION",
+            "enter": "RETURN",
+            "esc": "ESCAPE",
         }
 
         self.last_keypress = None
-        self.listener = Listener(on_release=self.on_release)
-        self.listener.start()
+        keyboard.on_release(self.on_release)
         self.bindings = default_bindings if bindings == None else bindings
 
     def get_command(self, peek_key: bool = False) -> Command:
@@ -47,5 +45,5 @@ class InputHandler:
 
         return None
 
-    def on_release(self, key: Key | KeyCode | None):
-        self.last_keypress = key
+    def on_release(self, event: keyboard.KeyboardEvent):
+        self.last_keypress = event.name
