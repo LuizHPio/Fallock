@@ -32,7 +32,8 @@ class TestInputHandler(unittest.TestCase):
         key_to_press = "z"
         expected_command = self.TEST_BINDINGS[key_to_press]
 
-        mock_event = unittest.mock.MagicMock(name=key_to_press)
+        mock_event = unittest.mock.MagicMock()
+        mock_event.name = key_to_press
         self.mock_on_release_callback(mock_event)
 
         self.assertEqual(self.handler.get_command(), expected_command)
@@ -42,7 +43,8 @@ class TestInputHandler(unittest.TestCase):
         key_to_press = "q"
         expected_command = self.TEST_BINDINGS[key_to_press]
 
-        mock_event = unittest.mock.MagicMock(name=key_to_press)
+        mock_event = unittest.mock.MagicMock()
+        mock_event.name = key_to_press
         self.mock_on_release_callback(mock_event)
 
         self.assertEqual(self.handler.get_command(

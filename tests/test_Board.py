@@ -25,6 +25,7 @@ class TestBoard(unittest.TestCase):
         self.assertFalse(self.board.is_animating)
 
     def test_has_collided_with_floor(self) -> None:
+        self.board.player_piece = Piece(Vector2(0, 0), "PYRAMID")
         self.board.player_piece.origin = Vector2(
             5, 18)
         self.assertTrue(self.board.has_collided(self.board.player_piece))
@@ -40,15 +41,10 @@ class TestBoard(unittest.TestCase):
 
     def test_block_collapse(self) -> None:
 
-        for i in range(2):
-            self.board.player_piece.origin = Vector2(i*3, 18)
-            self.board.physics_logic()
+        for x in range(self.board.width):
+            self.board.grid[x][self.board.height-1] = Block()
 
-        self.board.player_piece.origin = Vector2(0, 16)
-        self.board.physics_logic()
-
-        self.board.player_piece.origin = Vector2(6, 18)
-        self.board.physics_logic()
+        self.board.grid[4][self.board.height-2] = Block()
 
         self.board.score_line()
         for _ in range(10):
@@ -57,15 +53,16 @@ class TestBoard(unittest.TestCase):
         self.assertIsInstance(self.board.grid[4][19], Block)
 
     def test_petrify_piece(self) -> None:
+        self.board.player_piece = Piece(Vector2(0, 0), "PYRAMID")
         piece_to_petrify: Piece = self.board.player_piece
         piece_to_petrify.origin = Vector2(5, 10)
 
         self.board.petrify_piece(piece_to_petrify)
 
-        self.assertIsInstance(self.board.grid[6][10], Block)  # origin
-        self.assertIsInstance(self.board.grid[5][11], Block)  # left part
-        self.assertIsInstance(self.board.grid[7][11], Block)  # right part
-        self.assertIsInstance(self.board.grid[6][11], Block)  # bottom part
+        self.assertIsInstance(self.board.grid[5][10], Block)  # origin
+        self.assertIsInstance(self.board.grid[4][11], Block)  # left part
+        self.assertIsInstance(self.board.grid[6][11], Block)  # right part
+        self.assertIsInstance(self.board.grid[5][11], Block)  # bottom part
 
         self.assertNotEqual(self.board.player_piece, piece_to_petrify)
         self.assertEqual(self.board.player_piece.origin, Vector2(4, 0))
@@ -85,11 +82,12 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.player_piece.origin.y, initial_y + 1)
 
     def test_physics_logic_collision(self) -> None:
+        self.board.player_piece = Piece(Vector2(0, 0), 'PYRAMID')
         self.board.player_piece.origin = Vector2(
             5, 18)
         self.board.physics_logic()
-        self.assertIsInstance(self.board.grid[6][18], Block)
-        self.assertIsInstance(self.board.grid[6][19], Block)
+        self.assertIsInstance(self.board.grid[5][18], Block)
+        self.assertIsInstance(self.board.grid[5][19], Block)
         self.assertEqual(self.board.player_piece.origin.y, 0)
 
     def test_explode_bomb_clears_spaces(self) -> None:
