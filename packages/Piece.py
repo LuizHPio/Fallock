@@ -11,7 +11,6 @@ class Piece:
     type: pieceTypes | specialTypes
     origin: Vector2
     blocks_relative_pos: list[Vector2]
-    isFalling: bool
 
     def __init__(self, origin: Vector2, type: generatableTypes = None):
 
@@ -19,7 +18,15 @@ class Piece:
         self.origin = origin
         self.blocks_relative_pos = []
         self.materializeType(self.type)
-        self.isFalling = True
+
+    def copy(self) -> 'Piece':
+        new_piece = Piece(self.origin.copy(), self.type)
+
+        new_piece.blocks_relative_pos = []
+        for block in self.blocks_relative_pos:
+            new_piece.blocks_relative_pos.append(block.copy())
+
+        return new_piece
 
     def materializeType(self, type: generatableTypes):
         if type == "BOMB":

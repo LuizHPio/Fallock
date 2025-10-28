@@ -8,6 +8,8 @@ sys.path.insert(0, project_root)
 
 from packages.Renderer import Renderer  # nopep8
 from packages.Vector2 import Vector2  # nopep8
+from packages.Board import Board  # nopep8
+from packages.Player import Player  # nopep8
 
 
 def run_manual_test():
@@ -15,9 +17,9 @@ def run_manual_test():
     if being_debugged != True:
         pass
 
-    renderer = Renderer(board_dimensions=Vector2(5, 5))
-
-    renderer.show_endscreen(0, 0)
+    renderer = Renderer(board_dimensions=Vector2(20, 20))
+    board = Board(20, 20, Player())
+    renderer.draw(board)
     while True:
         time.sleep(0.1)
 
