@@ -31,8 +31,8 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(self.board.has_collided(self.board.player_piece))
 
     def test_has_collided_with_block(self) -> None:
+        self.board.player_piece = Piece(Vector2(5, 8), "PYRAMID")
         self.board.grid[5][10] = Block()
-        self.board.player_piece.origin = Vector2(5, 8)
         self.assertTrue(self.board.has_collided(self.board.player_piece))
 
     def test_no_collision(self) -> None:
