@@ -172,7 +172,6 @@ class Board:
             for x in range(self.width):
                 checking_line.append(self.grid[x][y])
 
-            # line isnt full, continue
             if None in checking_line:
                 continue
 
