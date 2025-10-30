@@ -26,8 +26,9 @@ class Player:
         self.load_acummulated_score()
 
     def end_match(self):
-        self.acummulated_score = self.score
+        self.acummulated_score += self.score
         self.score = 0
+        self.power_up = PowerUp(None)
         self.save_acummulated_score()
 
     def add_score(self, action: ScoreActions):
