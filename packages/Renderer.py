@@ -159,15 +159,16 @@ class Renderer:
         # draw piece landing spot
         piece_clone: Piece = board.player_piece.copy()
 
-        while True:
-            piece_clone.origin.y += 1
-            if board.has_collided(piece_clone):
-                break
+        if piece_clone.origin.y+piece_clone.height < board.height - 1:
+            while True:
+                piece_clone.origin.y += 1
+                if board.has_collided(piece_clone):
+                    break
 
-        for block in piece_clone.blocks_relative_pos:
-            block_abs = piece_clone.getBlockAbsPos(block)
-
-            self.stdscr.addstr(block_abs.y, block_abs.x, "-")
+            for block in piece_clone.blocks_relative_pos:
+                block_abs = piece_clone.getBlockAbsPos(block)
+                self.stdscr.addstr(block_abs.y+y_offset,
+                                   block_abs.x+x_offset, "-")
 
         piece = board.player_piece
 
