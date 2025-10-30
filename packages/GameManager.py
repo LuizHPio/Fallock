@@ -125,6 +125,7 @@ class GameManager():
         self.renderer.selection = None
         self.renderer.show_endscreen(
             self.player_manager.score, self.player_manager.acummulated_score)
+        self.player_manager.end_match()
         self.menu()
 
     def wait_framerate(self, timer: int):

@@ -170,7 +170,8 @@ class Renderer:
 
         self.stdscr.addstr((board.height+2)+2, 2,
                            f"Pontuação: {board.player_manager.score}")
-        self.stdscr.addstr((board.height+2)+3, 2, "Pontuação acumulada: ")
+        self.stdscr.addstr((board.height+2)+3, 2,
+                           f"Pontuação acumulada: {board.player_manager.acummulated_score}")
 
     @draw_call
     def show_alert(self, message: str):
