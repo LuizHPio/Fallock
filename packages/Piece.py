@@ -11,7 +11,7 @@ class Piece:
     type: pieceTypes | specialTypes
     origin: Vector2
     blocks_relative_pos: list[Vector2]
-    isFalling: bool
+    height: int
 
     def __init__(self, origin: Vector2, type: generatableTypes = None):
 
@@ -19,7 +19,16 @@ class Piece:
         self.origin = origin
         self.blocks_relative_pos = []
         self.materializeType(self.type)
-        self.isFalling = True
+        self.height = 0
+
+    def copy(self) -> 'Piece':
+        new_piece = Piece(self.origin.copy(), self.type)
+
+        new_piece.blocks_relative_pos = []
+        for block in self.blocks_relative_pos:
+            new_piece.blocks_relative_pos.append(block.copy())
+
+        return new_piece
 
     def materializeType(self, type: generatableTypes):
         if type == "BOMB":
@@ -41,6 +50,8 @@ class Piece:
             self.blocks_relative_pos.append(block2)
             self.blocks_relative_pos.append(block3)
             self.blocks_relative_pos.append(block4)
+
+            self.height = 2
             return
 
         if type == "LINE":
@@ -53,6 +64,8 @@ class Piece:
             self.blocks_relative_pos.append(block2)
             self.blocks_relative_pos.append(block3)
             self.blocks_relative_pos.append(block4)
+
+            self.height = 1
             return
 
         if type == "PYRAMID":
@@ -65,6 +78,8 @@ class Piece:
             self.blocks_relative_pos.append(block2)
             self.blocks_relative_pos.append(block3)
             self.blocks_relative_pos.append(block4)
+
+            self.height = 2
             return
 
     def rotateBlocks(self, is_clock_wise: bool):

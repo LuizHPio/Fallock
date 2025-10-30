@@ -129,8 +129,6 @@ class Renderer:
     @draw_call
     def draw(self, board: Board):
 
-        piece = board.player_piece
-
         # draw grid borders
 
         for x in range(1, board.width+1):  # draw top and bottom limits
@@ -157,6 +155,22 @@ class Renderer:
                     self.stdscr.addstr(y+y_offset, x+x_offset, " ")
                 else:
                     self.stdscr.addstr(y+y_offset, x+x_offset, item.symbol)
+
+        # draw piece landing spot
+        piece_clone: Piece = board.player_piece.copy()
+
+        if piece_clone.origin.y+piece_clone.height < board.height - 1:
+            while True:
+                piece_clone.origin.y += 1
+                if board.has_collided(piece_clone):
+                    break
+
+            for block in piece_clone.blocks_relative_pos:
+                block_abs = piece_clone.getBlockAbsPos(block)
+                self.stdscr.addstr(block_abs.y+y_offset,
+                                   block_abs.x+x_offset, "-")
+
+        piece = board.player_piece
 
         # draw current piece
         for piece_block in piece.blocks_relative_pos:
