@@ -19,8 +19,9 @@ class Board:
     is_animating: bool
     blocks_fell_in_scan: bool
     game_over: bool
+    level: int
 
-    def __init__(self, width: int, height: int, player_manager: Player):
+    def __init__(self, width: int, height: int, player_manager: Player, level: int = 1):
         self.player_manager = player_manager
         self.height = height
         self.width = width
@@ -31,6 +32,7 @@ class Board:
         self.collapse_height = -1
         self.scan_height = -1
         self.game_over = False
+        self.level = level
         self.generate_piece()
 
         for _ in range(self.width):
@@ -163,6 +165,9 @@ class Board:
 
         self.player_piece.origin.y += 1
 
+    def increase_level(self):
+        self.level += 1
+
     def score_line(self):
         full_lines: list[int] = []
 
@@ -178,9 +183,12 @@ class Board:
             full_lines.append(y)
 
         if full_lines:
-            self.player_manager.add_score("LINE_CLEAR")
+            multiplier: float = 1.0
+            self.increase_level()
 
             for y in full_lines:
+                self.player_manager.add_score("LINE_CLEAR", multiplier)
+                multiplier += 1
                 for x in range(self.width):
                     self.grid[x][y] = None
 

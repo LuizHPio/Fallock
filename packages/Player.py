@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Literal, TypeAlias
 import pickle
 import os
+import math
 
 ScoreActions: TypeAlias = Literal["LINE_CLEAR", "BLOCK_DESTROYED"]
 SAVE_FILE_LOCATION = "./data/"
@@ -31,12 +32,12 @@ class Player:
         self.power_up = PowerUp(None)
         self.save_acummulated_score()
 
-    def add_score(self, action: ScoreActions):
+    def add_score(self, action: ScoreActions, multiplier: float = 1.0):
         if action == "BLOCK_DESTROYED":
-            self.score += 10
+            self.score += math.floor(10 * multiplier)
             return
         if action == "LINE_CLEAR":
-            self.score += 100
+            self.score += math.floor(100 * multiplier)
             self.add_powerup()
             return
 

@@ -22,12 +22,12 @@ class GameManager():
         board_dimensions = Vector2(12, 20)
         self.renderer = Renderer(board_dimensions, debug)
         self.player_manager = Player()
+        self.level = 1
         self.board = Board(board_dimensions.x,
                            board_dimensions.y, self.player_manager)
         self.input_handler = InputHandler()
         self.target_tickrate = 128
         self.target_framerate = 256
-        self.level = 1
         self.game_running = False
 
     def menu(self, first_start: bool = False):
@@ -100,6 +100,7 @@ class GameManager():
 
         tickrate_counter = 0
         while self.game_running:
+            self.level = self.board.level
             if self.board.is_animating:
                 self.board.physics_logic()
                 self.renderer.draw(self.board)
