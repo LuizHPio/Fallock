@@ -154,7 +154,16 @@ class Renderer:
         # draw piece landing spot
         piece_clone: Piece = board.player_piece.copy()
 
-        if piece_clone.origin.y+piece_clone.height < board.height - 1:
+        # get piece height(distance from origin to bottom), independent of rotation
+        biggest_height: int = 0
+        for block in piece_clone.blocks_relative_pos:
+            if block.y < 0:
+                if block.y < biggest_height:
+                    biggest_height = block.y
+
+        clone_height: int = abs(biggest_height)
+
+        if piece_clone.origin.y+clone_height < board.height - 1:
             while True:
                 piece_clone.origin.y += 1
                 if board.has_collided(piece_clone):
