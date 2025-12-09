@@ -1,4 +1,5 @@
 import os
+import sys
 from packages.GameManager import GameManager
 
 
@@ -13,7 +14,10 @@ def main():
             print("AVISO:")
             print("O Linux restringe a obtenção de estado de teclas para evitar que programas maliciosos obtenham dados sensíveis")
             print("Por conta disso, o programa precisa ser executado com permissões elevadas, a seguir será requisitado a senha do sistema")
-            os.system("sudo ./.env/bin/python game.py")
+
+            args = ["sudo", sys.executable] + sys.argv
+            os.execvp("sudo", args)
+
         game_invoker()
 
     if os.name == "nt":
