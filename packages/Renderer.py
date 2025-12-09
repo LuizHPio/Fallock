@@ -64,7 +64,7 @@ class Renderer:
         "START_SCREEN": ["START_GAME", "QUIT"],
     }
 
-    def __init__(self, board_dimensions: Vector2, debug: bool = False) -> None:
+    def __init__(self, stdscr: curses.window, board_dimensions: Vector2, debug: bool = False) -> None:
         self.selection = None
         self.debug = debug
 
@@ -72,7 +72,7 @@ class Renderer:
             return
 
         self.board_dimensions = board_dimensions
-        self.stdscr = curses.initscr()
+        self.stdscr = stdscr
 
         curses.noecho()
         curses.cbreak()

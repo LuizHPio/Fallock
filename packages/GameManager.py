@@ -5,6 +5,7 @@ from packages.InputHandler import InputHandler, Command
 from packages.Player import Player
 import time
 import math
+import curses
 
 
 class GameManager():
@@ -19,16 +20,22 @@ class GameManager():
     game_running: bool
 
     def __init__(self, debug: bool = False):
-        board_dimensions = Vector2(12, 20)
-        self.renderer = Renderer(board_dimensions, debug)
+        self.__board_dimensions = Vector2(12, 20)
+        self.__debug = debug
+
         self.player_manager = Player()
-        self.board = Board(board_dimensions.x,
-                           board_dimensions.y, self.player_manager)
-        self.input_handler = InputHandler()
+        self.board = Board(self.__board_dimensions.x,
+                           self.__board_dimensions.y, self.player_manager)
         self.target_tickrate = 128
         self.target_framerate = 256
         self.level = 1
         self.game_running = False
+
+        curses.wrapper(self.__initialize_input_and_renderer)
+
+    def __initialize_input_and_renderer(self, stdscr: curses.window):
+        self.input_handler = InputHandler(stdscr)
+        self.renderer = Renderer(stdscr, self.__board_dimensions, self.__debug)
 
     def menu(self, first_start: bool = False):
         if first_start:
