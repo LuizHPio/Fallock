@@ -195,26 +195,21 @@ class Renderer:
 
     @draw_call
     def draw(self, board: Board):
+        x_offset = 2
+        y_offset = 2
+
+        # draw current level
+        self.stdscr.addstr(-2+y_offset, board.width//4 +
+                           x_offset, f"Nível atual: {board.level}")
 
         # draw grid borders
+        tlc = Vector2(x_offset-1, y_offset-1)
+        rbc = Vector2(board.width+x_offset, board.height+y_offset)
 
-        for x in range(1, board.width+1):  # draw top and bottom limits
-            self.stdscr.addstr(0, x, "-")
-            self.stdscr.addstr(board.height+1, x, "-")
-
-        for y in range(1, board.height+1):  # draw left and right limits
-            self.stdscr.addstr(y, 0, "|")
-            self.stdscr.addstr(y, board.width+1, "|")
-
-        # draw corners
-        self.stdscr.addstr(0, 0, "+")
-        self.stdscr.addstr(0, board.width+1, "+")
-        self.stdscr.addstr(board.height+1, 0, "+")
-        self.stdscr.addstr(board.height+1, board.width+1, "+")
+        # draws grid borders
+        self.draw_square(tlc, rbc)
 
         # draw the static blocks
-        x_offset = 1
-        y_offset = 1
         for x in range(len(board.grid)):
             for y in range(len(board.grid[x])):
                 item = board.grid[x][y]
@@ -226,7 +221,16 @@ class Renderer:
         # draw piece landing spot
         piece_clone: Piece = board.player_piece.copy()
 
-        if piece_clone.origin.y+piece_clone.height < board.height - 1:
+        # get piece height(distance from origin to bottom), independent of rotation
+        biggest_height: int = 0
+        for block in piece_clone.blocks_relative_pos:
+            if block.y < 0:
+                if block.y < biggest_height:
+                    biggest_height = block.y
+
+        clone_height: int = abs(biggest_height)
+
+        if piece_clone.origin.y+clone_height < board.height - 1:
             while True:
                 piece_clone.origin.y += 1
                 if board.has_collided(piece_clone):
