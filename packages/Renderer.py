@@ -93,6 +93,7 @@ class Renderer:
 
         self.board_dimensions = board_dimensions
         self.stdscr = stdscr
+        curses.curs_set(0)
 
         self.require_window_resize()
 
@@ -259,6 +260,35 @@ class Renderer:
         self.stdscr.addstr((board.height+2)+3, 2,
                            f"Pontuação acumulada: {board.player_manager.acummulated_score}")
 
+        preview_x = safezone + 6
+        preview_start_y = 4
+
+        self.stdscr.addstr(preview_start_y, preview_x-3, "Próximas peças:")
+
+        for i, next_piece in enumerate(board.spawnlist[:3]):
+
+            box_width = 7
+            box_height = 4
+
+            box_y = preview_start_y + 2 + i + (i * (box_height + 1))
+
+            tlc_preview = Vector2(preview_x, box_y)
+            rbc_preview = Vector2(preview_x + box_width, box_y + box_height)
+
+            sym = None
+            if i == 0:
+                sym = "$"
+            self.draw_square(tlc_preview, rbc_preview, sym)
+
+            center_x = preview_x + (box_width // 2)
+            center_y = box_y + (box_height // 2)
+
+            for block in next_piece.blocks_relative_pos:
+                draw_x = center_x + block.x
+                draw_y = center_y + block.y
+
+                self.stdscr.addstr(draw_y, draw_x, "X")
+
     @draw_call
     def show_alert(self, message: str):
         self.stdscr.addstr(message)
@@ -410,8 +440,8 @@ class Renderer:
             draw_with = symbol
 
         for y in range(left_top_corner.y+1, right_bottom_corner.y):
-            self.stdscr.addstr(y, left_top_corner.x, "|")
-            self.stdscr.addstr(y, right_bottom_corner.x, "|")
+            self.stdscr.addstr(y, left_top_corner.x, draw_with)
+            self.stdscr.addstr(y, right_bottom_corner.x, draw_with)
 
     @draw_call
     def show_endscreen(self, match_score: int, accumulated_score: int):

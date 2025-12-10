@@ -33,6 +33,8 @@ class Board:
         self.scan_height = -1
         self.game_over = False
         self.level = level
+        self.spawnlist: list[Piece] = [
+            Piece(Vector2(self.width//2, 0)), Piece(Vector2(self.width//2, 0)), Piece(Vector2(self.width//2, 0))]
         self.generate_piece()
 
         for _ in range(self.width):
@@ -55,7 +57,12 @@ class Board:
         return False
 
     def generate_piece(self, type: generatableTypes = None):
-        self.player_piece = Piece(Vector2(self.width//2, 0), type)
+        self.player_piece = self.spawnlist.pop(0)
+
+        if len(self.spawnlist) > 3 and type == None:
+            return
+
+        self.spawnlist.append(Piece(Vector2(self.width//2, 0), type))
 
     def petrify_piece(self, piece: Piece):
         if piece.type == "BOMB":
@@ -270,7 +277,8 @@ class Board:
 
             if not powerup.is_active:
                 powerup.is_active = True
-                self.generate_piece("BOMB")
+                self.spawnlist.insert(0, self.player_piece)
+                self.player_piece = Piece(Vector2(self.width//2, 0), "BOMB")
                 return
 
             # vectors corresponding to the deleted blocks around the bomb, radius = 2
@@ -295,8 +303,8 @@ class Board:
 
             powerup.name = None
             powerup.is_active = False
-            self.start_collapse(self.player_piece.origin.y)
-            self.generate_piece()
+            self.start_collapse(self.height)
+            self.player_piece = self.spawnlist.pop(0)
 
         powerup_functions: dict[PowerUpNamesNSpecials, Callable[..., Any]] = {
             "TELEPORTER": teleport_piece,
