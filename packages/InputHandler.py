@@ -2,7 +2,7 @@ import curses
 from typing import Literal, TypeAlias, get_args
 
 Command: TypeAlias = Literal["UP", "DOWN",
-                             "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION", "RETURN", "MOUSE_CLICK"] | None
+                             "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION", "RETURN", "MOUSE_CLICK", "MOUSE_MOVEMENT"] | None
 KeyPress: TypeAlias = int | None
 
 
@@ -18,7 +18,6 @@ class InputHandler:
             ord("d"): "RIGHT",
             ord("a"): "LEFT",
             ord("s"): "DOWN",
-            ord("h"): "DUMP",
             ord("p"): "TRIGGER_POWERUP",
             ord("e"): "CLOCKWISE_ROTATION",
             ord("q"): "COUNTERWISE_ROTATION",
@@ -27,9 +26,11 @@ class InputHandler:
         }
 
         self.stdscr = stdscr
-        self.stdscr.nodelay(True)
         self.stdscr.keypad(True)
-        self.bindings = default_bindings if bindings == None else bindings
+        curses.mousemask(curses.ALL_MOUSE_EVENTS |
+                         curses.REPORT_MOUSE_POSITION)
+        self.stdscr.nodelay(True)
+        self.__class__.bindings = default_bindings if bindings == None else bindings
 
     def get_command(self) -> Command:
         try:
@@ -43,4 +44,4 @@ class InputHandler:
         if key == curses.KEY_MOUSE:
             return "MOUSE_CLICK"
 
-        return self.bindings.get(key, None)
+        return self.__class__.bindings.get(key, None)

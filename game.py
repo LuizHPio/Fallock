@@ -1,10 +1,11 @@
 from packages.GameManager import GameManager
+import curses
 
 
-def main():
-    mgr = GameManager()
+def main(stdscr: curses.window):
+    mgr = GameManager(stdscr)
     mgr.menu(True)
 
 
 if __name__ == "__main__":
-    main()
+    curses.wrapper(main)

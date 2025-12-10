@@ -19,26 +19,24 @@ class GameManager():
     player_manager: Player
     game_running: bool
 
-    def __init__(self, debug: bool = False):
-        self.__board_dimensions = Vector2(12, 20)
-        self.__debug = debug
+    def __init__(self, stdscr: curses.window, debug: bool = False):
+        self._board_dimensions = Vector2(12, 20)
+        self._debug = debug
 
+        self.input_handler = InputHandler(stdscr)
+        self.renderer = Renderer(stdscr, self._board_dimensions, self._debug)
         self.player_manager = Player()
-        self.board = Board(self.__board_dimensions.x,
-                           self.__board_dimensions.y, self.player_manager)
+        self.player_manager.load_acummulated_score()
+        self.board = Board(self._board_dimensions.x,
+                           self._board_dimensions.y, self.player_manager)
         self.target_tickrate = 128
         self.target_framerate = 256
         self.level = 1
         self.game_running = False
 
-        curses.wrapper(self.__initialize_input_and_renderer)
-
-    def __initialize_input_and_renderer(self, stdscr: curses.window):
-        self.input_handler = InputHandler(stdscr)
-        self.renderer = Renderer(stdscr, self.__board_dimensions, self.__debug)
-
     def menu(self, first_start: bool = False):
         if first_start:
+            self.renderer.selection = "START_GAME"
             self.renderer.show_startscreen()
 
         while True:
@@ -64,6 +62,9 @@ class GameManager():
                     return
 
                 if self.renderer.selection == "CHANGE_BINDINGS":
+                    self.renderer.current_menu = "BINDINGS_SCREEN"
+                    self.renderer.show_bindingscreen()
+                    self.renderer.selection = None
                     return
 
                 if self.renderer.selection == "QUIT":
@@ -76,13 +77,32 @@ class GameManager():
                     self.renderer.selection = None
                     self.menu(True)
 
+            if self.renderer.current_menu == "BINDINGS_SCREEN":
+                if user_input == "RETURN":
+                    if self.renderer.selection == "RETURN_FROM_BINDINGS":
+                        self.player_manager.save_acummulated_score()
+                        self.renderer.current_menu = "START_SCREEN"
+                        self.renderer.show_startscreen()
+                        self.renderer.selection = "START_GAME"
+                        return
+
+                    self.renderer.set_bind()
+
         if user_input == "DOWN":
-            self.renderer.next_selection()
+            self.renderer.change_selection(True)
             return
 
         if user_input == "UP":
-            self.renderer.previous_selection()
+            self.renderer.change_selection(False)
             return
+
+        if user_input == "MOUSE_CLICK":
+            try:
+                _, x, y, _, _ = curses.getmouse()
+                if (self.renderer.handle_mouse_click(x, y)):
+                    self.process_input("RETURN")
+            except curses.error:
+                pass
 
     def game_inputs(self, user_input: Command):
         movement_commands: list[Command] = [
