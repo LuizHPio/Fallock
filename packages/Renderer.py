@@ -53,7 +53,7 @@ MenuScreens: TypeAlias = Literal["START_SCREEN",
 
 
 UI_Elements: TypeAlias = Literal["START_GAME",
-                                 "CHANGE_BINDINGS", "QUIT", "RETURN_FROM_ENDGAME", "RETURN_FROM_BINDINGS"] | None
+                                 "CHANGE_BINDINGS", "QUIT", "RETURN_FROM_ENDGAME", "RETURN_FROM_BINDINGS", "RESTORE_BINDINGS"] | None
 
 Bounding_boxes: dict[UI_Elements, Annotated[list[Vector2], "length=2"]] = {
     "START_GAME": [Vector2(2, 2), Vector2(22, 8)],
@@ -61,6 +61,7 @@ Bounding_boxes: dict[UI_Elements, Annotated[list[Vector2], "length=2"]] = {
     "QUIT": [Vector2(2, 18), Vector2(22, 24)],
     "RETURN_FROM_ENDGAME": [Vector2(0, 0), Vector2(100, 100)],
     "RETURN_FROM_BINDINGS": [Vector2(2, 33), Vector2(24, 39)],
+    "RESTORE_BINDINGS": [Vector2(26, 33), Vector2(48, 39)],
 }
 
 
@@ -72,7 +73,7 @@ class Renderer:
     current_menu: MenuScreens
     elements_per_screen: dict[MenuScreens, list[UI_Elements]] = {
         "START_SCREEN": ["START_GAME", "CHANGE_BINDINGS", "QUIT"],
-        "BINDINGS_SCREEN": ["RETURN_FROM_BINDINGS"],
+        "BINDINGS_SCREEN": ["RETURN_FROM_BINDINGS", "RESTORE_BINDINGS"],
         "END_GAME_SCREEN": ["RETURN_FROM_ENDGAME"],
     }
 
@@ -286,6 +287,13 @@ class Renderer:
                     UL, BR, "Voltar", is_selected)
                 continue
 
+            if ui_element == "RESTORE_BINDINGS":
+                ul, br = Bounding_boxes[ui_element]
+                is_selected = "+" if self.selection == ui_element else None
+                self.draw_square_text(
+                    ul, br, "Restaurar controles", is_selected)
+                continue
+
             if ui_element.startswith("BTN_BIND_"):
 
                 # Another str to Command cast, this one is safe because the ui id was constructed \
@@ -338,6 +346,9 @@ class Renderer:
 
             if key == curses.KEY_MOUSE:
                 continue
+
+            if key == 27:
+                return
 
             break
 

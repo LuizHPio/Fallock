@@ -85,7 +85,12 @@ class GameManager():
                         self.renderer.selection = "START_GAME"
                         return
 
+                    if self.renderer.selection == "RESTORE_BINDINGS":
+                        self.input_handler.restore_bindings()
+                        self.renderer.show_bindingscreen()
+
                     self.renderer.set_bind()
+                    self.renderer.show_bindingscreen()
 
         if user_input == "DOWN":
             self.renderer.change_selection(True)

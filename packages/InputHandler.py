@@ -10,10 +10,10 @@ class InputHandler:
     responses: list[Command] = list(get_args(Command))
 
     last_keypress: KeyPress
-    bindings: dict[KeyPress, Command]
+    bindings: dict[KeyPress, Command] = {}
 
     def __init__(self, stdscr: curses.window, bindings: dict[KeyPress, Command] | None = None) -> None:
-        default_bindings: dict[KeyPress, Command] = {
+        self.default_bindings: dict[KeyPress, Command] = {
             ord("w"): "UP",
             ord("d"): "RIGHT",
             ord("a"): "LEFT",
@@ -30,7 +30,7 @@ class InputHandler:
         curses.mousemask(curses.ALL_MOUSE_EVENTS |
                          curses.REPORT_MOUSE_POSITION)
         self.stdscr.nodelay(True)
-        self.__class__.bindings = default_bindings if bindings == None else bindings
+        self.__class__.bindings = self.default_bindings if bindings == None else bindings
 
     def get_command(self) -> Command:
         try:
@@ -45,3 +45,6 @@ class InputHandler:
             return "MOUSE_CLICK"
 
         return self.__class__.bindings.get(key, None)
+
+    def restore_bindings(self):
+        self.__class__.bindings = self.default_bindings
