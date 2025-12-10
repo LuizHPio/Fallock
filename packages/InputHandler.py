@@ -1,9 +1,9 @@
-import keyboard
+import curses
 from typing import Literal, TypeAlias, get_args
 
 Command: TypeAlias = Literal["UP", "DOWN",
-                             "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION", "RETURN"] | None
-KeyPress: TypeAlias = str | None
+                             "LEFT", "RIGHT", "ESCAPE", "DUMP", "TRIGGER_POWERUP", "CLOCKWISE_ROTATION", "COUNTERWISE_ROTATION", "RETURN", "MOUSE_CLICK", "MOUSE_MOVEMENT"] | None
+KeyPress: TypeAlias = int | None
 
 
 class InputHandler:
@@ -12,38 +12,36 @@ class InputHandler:
     last_keypress: KeyPress
     bindings: dict[KeyPress, Command]
 
-    def __init__(self, bindings: dict[KeyPress, Command] | None = None) -> None:
+    def __init__(self, stdscr: curses.window, bindings: dict[KeyPress, Command] | None = None) -> None:
         default_bindings: dict[KeyPress, Command] = {
-            "w": "UP",
-            "d": "RIGHT",
-            "a": "LEFT",
-            "s": "DOWN",
-            "h": "DUMP",
-            "p": "TRIGGER_POWERUP",
-            "e": "CLOCKWISE_ROTATION",
-            "q": "COUNTERWISE_ROTATION",
-            "enter": "RETURN",
-            "esc": "ESCAPE",
+            ord("w"): "UP",
+            ord("d"): "RIGHT",
+            ord("a"): "LEFT",
+            ord("s"): "DOWN",
+            ord("p"): "TRIGGER_POWERUP",
+            ord("e"): "CLOCKWISE_ROTATION",
+            ord("q"): "COUNTERWISE_ROTATION",
+            curses.KEY_ENTER: "RETURN",
+            10: "RETURN",
         }
 
-        self.last_keypress = None
-        keyboard.on_release(self.on_release)
-        self.bindings = default_bindings if bindings == None else bindings
+        self.stdscr = stdscr
+        self.stdscr.keypad(True)
+        curses.mousemask(curses.ALL_MOUSE_EVENTS |
+                         curses.REPORT_MOUSE_POSITION)
+        self.stdscr.nodelay(True)
+        self.__class__.bindings = default_bindings if bindings == None else bindings
 
-    def get_command(self, peek_key: bool = False) -> Command:
-        response = self.get_response()
+    def get_command(self) -> Command:
+        try:
+            key = self.stdscr.getch()
+        except curses.error:
+            return None
 
-        if not peek_key:
-            self.last_keypress = None
+        if key == curses.ERR:
+            return None
 
-        return response
+        if key == curses.KEY_MOUSE:
+            return "MOUSE_CLICK"
 
-    def get_response(self) -> Command:
-
-        if self.last_keypress in self.bindings:
-            return self.bindings[self.last_keypress]
-
-        return None
-
-    def on_release(self, event: keyboard.KeyboardEvent):
-        self.last_keypress = event.name
+        return self.__class__.bindings.get(key, None)

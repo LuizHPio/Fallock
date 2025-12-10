@@ -1,4 +1,5 @@
 from packages.PowerUp import PowerUp
+from packages.InputHandler import InputHandler, KeyPress, Command
 from dataclasses import dataclass
 from typing import Literal, TypeAlias
 import pickle
@@ -13,6 +14,7 @@ DATA_FILE_NAME = "data.bin"
 @dataclass
 class DataBlob:
     acummulated_score: int
+    bindings: dict[KeyPress, Command]
 
 
 class Player:
@@ -54,7 +56,8 @@ class Player:
         try:
             with open(save_file_to_save, "wb") as file:
                 try:
-                    data = DataBlob(self.acummulated_score)
+                    data = DataBlob(self.acummulated_score,
+                                    InputHandler.bindings)
                     pickle.dump(data, file)
                 except Exception as error:
                     print("Could not save acummulated score")
@@ -76,6 +79,7 @@ class Player:
             try:
                 loaded_blob: DataBlob = pickle.load(file)
                 self.acummulated_score = loaded_blob.acummulated_score
+                InputHandler.bindings = loaded_blob.bindings
             except Exception as error:
                 print("Could not load acummulated score")
                 print(error)
